@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-service-dev
+  namespace: argocd
+  labels:
+    app: my-service
+    env: dev
+spec:
+  project: default
+  source:
+    repoURL: https://bitbucket.org/my-org/k8s-gitops-repo.git
+    targetRevision: HEAD
+    path: charts/my-service
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml        # ← Dev overrides
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev               # Isolated namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        maxDuration: 1m
+        factor: 2

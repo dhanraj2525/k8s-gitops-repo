@@ -1,0 +1,67 @@
+# ── Guard: block 'latest' and empty tags at deploy time ───
+{{- if eq .Values.image.tag "latest" }}
+  {{- fail "❌ image.tag = 'latest' is not allowed. Use a commit hash." }}
+{{- end }}
+{{- if not .Values.image.tag }}
+  {{- fail "❌ image.tag is empty. Jenkins must set a commit hash." }}
+{{- end }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-service.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "my-service.labels" . | nindent 4 }}
+  annotations:
+    deployment.image/commit: {{ .Values.image.tag | quote }}
+    deployment.image/full:   "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "my-service.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        {{- include "my-service.selectorLabels" . | nindent 8 }}
+      annotations:
+        # Restart pods when configmap changes
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: IMAGE_TAG
+              value: {{ .Values.image.tag | quote }}
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

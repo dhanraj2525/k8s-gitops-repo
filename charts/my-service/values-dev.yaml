@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────
+# DEV environment overrides
+# Triggered by: develop branch or feature/* branches
+# image.tag → updated automatically by Jenkins CI
+# ─────────────────────────────────────────────────────────────
+
+image:
+  repository: registry.example.com/my-org/my-service
+  tag: "abc1234f"          # ← Jenkins writes commit hash here
+  pullPolicy: IfNotPresent
+
+# Low replicas — dev doesn't need HA
+replicaCount: 1
+
+ingress:
+  enabled: true
+  className: nginx
+  host: my-service.dev.example.com
+  tls:
+    enabled: false           # No TLS in dev
+    secretName: ""
+
+# Minimal resources — save cluster cost in dev
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# No autoscaling in dev
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+
+# Fast probe timings — quicker feedback in dev
+probes:
+  liveness:
+    path: /health/live
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  readiness:
+    path: /health/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Dev-specific env vars
+env:
+  APP_ENV: development
+  LOG_LEVEL: debug           # Verbose logging in dev
+  ENABLE_SWAGGER: "true"     # Expose API docs in dev only
+  CACHE_TTL: "0"             # Disable cache for dev testing

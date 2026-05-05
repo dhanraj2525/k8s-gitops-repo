@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────
+# STAGING environment overrides
+# Triggered by: staging branch
+# Mirrors production as closely as possible
+# image.tag → updated automatically by Jenkins CI
+# ─────────────────────────────────────────────────────────────
+
+image:
+  repository: registry.example.com/my-org/my-service
+  tag: "abc1234f"          # ← Jenkins writes commit hash here
+  pullPolicy: IfNotPresent
+
+# Mirror prod replica count for realistic load testing
+replicaCount: 2
+
+ingress:
+  enabled: true
+  className: nginx
+  host: my-service.staging.example.com
+  tls:
+    enabled: true            # TLS enabled — mirrors prod
+    secretName: my-service-staging-tls
+
+# Mirror prod resources for accurate perf testing
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+# Light autoscaling — test scaling behavior before prod
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+probes:
+  liveness:
+    path: /health/live
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readiness:
+    path: /health/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Staging-specific env vars
+env:
+  APP_ENV: staging
+  LOG_LEVEL: info
+  ENABLE_SWAGGER: "true"     # Expose docs for QA team
+  CACHE_TTL: "60"

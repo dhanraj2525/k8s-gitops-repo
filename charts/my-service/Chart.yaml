@@ -1,0 +1,6 @@
+apiVersion: v2
+name: my-service
+description: Dummy Node.js service — managed by Jenkins + ArgoCD
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
