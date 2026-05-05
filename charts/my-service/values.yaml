@@ -1,10 +1,10 @@
-# ── Base values — never deployed directly ─────────────────
-# Environment-specific files override these
+# Base values — do not deploy directly
+# Environment specific files override these
 
 image:
-  repository: registry.example.com/my-org/my-service
-  tag: ""                    # Always set by Jenkins — never empty
-  pullPolicy: IfNotPresent   # Safe: every tag is a unique commit hash
+  repository: ghcr.io/dhanraj2525/my-service
+  tag: ""                   # Always set by Jenkins
+  pullPolicy: IfNotPresent
 
 replicaCount: 1
 
@@ -17,9 +17,6 @@ ingress:
   enabled: false
   className: nginx
   host: ""
-  tls:
-    enabled: false
-    secretName: ""
 
 resources:
   requests:
@@ -28,12 +25,6 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 70
 
 probes:
   liveness:
@@ -45,12 +36,10 @@ probes:
     initialDelaySeconds: 5
     periodSeconds: 5
 
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
-
 env:
   APP_ENV: base
   LOG_LEVEL: info
+
+# GHCR pull secret
+imagePullSecrets:
+  - name: ghcr-secret
