@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:dhanraj2525/k8s-gitops-repo.git
-    targetRevision: main
+    targetRevision: HEAD
     path: charts/my-service
     helm:
       valueFiles:
