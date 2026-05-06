@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/dhanraj2525/my-service
-  tag: "1326c1c4" # Jenkins writes commit hash here
+  tag: "15-106a1ee7" # Jenkins writes commit hash here
   pullPolicy: IfNotPresent
 replicaCount: 1
 ingress:
