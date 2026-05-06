@@ -17,7 +17,11 @@ ingress:
   enabled: false
   className: nginx
   host: ""
-
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
 resources:
   requests:
     cpu: 100m
