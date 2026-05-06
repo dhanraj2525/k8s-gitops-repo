@@ -9,8 +9,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bitbucket.org/my-org/k8s-gitops-repo.git
-    targetRevision: HEAD
+    repoURL: git@github.com:dhanraj2525/k8s-gitops-repo.git
+    targetRevision: main
     path: charts/my-service
     helm:
       valueFiles:
