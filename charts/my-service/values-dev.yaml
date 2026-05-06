@@ -1,15 +1,12 @@
 image:
   repository: ghcr.io/dhanraj2525/my-service
-  tag: "3dd00cc0"                   # Jenkins writes commit hash here
+  tag: "1326c1c4" # Jenkins writes commit hash here
   pullPolicy: IfNotPresent
-
 replicaCount: 1
-
 ingress:
   enabled: false
   className: nginx
   host: my-service.dev.example.com
-
 resources:
   requests:
     cpu: 50m
@@ -17,7 +14,6 @@ resources:
   limits:
     cpu: 200m
     memory: 256Mi
-
 env:
   APP_ENV: development
   LOG_LEVEL: debug
