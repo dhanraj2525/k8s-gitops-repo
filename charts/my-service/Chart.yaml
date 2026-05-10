@@ -1,6 +1,0 @@
-apiVersion: v2
-name: my-service
-description: my node js service
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
