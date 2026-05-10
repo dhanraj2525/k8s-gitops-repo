@@ -6,6 +6,18 @@ image:
   pullPolicy: IfNotPresent
   tag: "30"
 
+podLabels:
+  app.kubernetes.io/name: my-service
+  app: my-service
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
 serviceAccount:
   create: false
   automount: true
