@@ -5,6 +5,12 @@ image:
   pullPolicy: IfNotPresent
   tag: "30"
 
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+
 
 service:
   type: ClusterIP
