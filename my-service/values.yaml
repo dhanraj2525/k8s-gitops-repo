@@ -2,7 +2,7 @@ replicaCount: 1
 
 fullnameOverride: "my-service"
 image:
-  repository: nghcr.io/dhanraj2525/my-service
+  repository: ghcr.io/dhanraj2525/my-service
   pullPolicy: IfNotPresent
   tag: "31"
 
